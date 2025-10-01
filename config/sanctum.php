@@ -81,4 +81,6 @@ return [
         'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
     ],
 
+    'access_token_expiry' => env('ACCESS_TOKEN_EXPIRY_MINUTES', 60), //1 hour
+    'refresh_token_expiry' => env('REFRESH_TOKEN_EXPIRY_MINUTE', 43200), //30 day
 ];
