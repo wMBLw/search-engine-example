@@ -15,23 +15,28 @@ class XmlProviderAdapter extends AbstractProviderAdapter
 
     public function fetchAll(): array
     {
+        try {
+            $xmlApiResponseBody = $this->getApiData();
 
-        $xmlApiResponseBody = $this->getApiData();
+            $xmlConvertedArray = $this->xmlStringToArray($xmlApiResponseBody);
 
-        $xmlConvertedArray = $this->xmlStringToArray($xmlApiResponseBody);
+            if (!is_array($xmlConvertedArray)) {
+                return [];
+            }
 
-        if (!is_array($xmlConvertedArray)) {
+            return $this->convertNormalizedContentDto($xmlConvertedArray['items']['item']);
+
+        } catch (\Throwable $e) {
+            report($e);
             return [];
         }
-
-        return $this->convertNormalizedContentDto($xmlConvertedArray['items']['item']);
     }
 
     private function xmlStringToArray(string $xmlString): ?array
     {
         $xmlData = simplexml_load_string($xmlString, SimpleXMLElement::class, LIBXML_NOCDATA);
 
-        if (is_null($xmlData)) {
+        if ($xmlData === false) {
             return null;
         }
 
