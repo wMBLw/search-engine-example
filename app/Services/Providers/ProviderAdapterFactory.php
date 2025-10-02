@@ -11,8 +11,8 @@ class ProviderAdapterFactory
     public static function make(Provider $provider)
     {
         return match ($provider->type) {
-            ProviderType::JSON->value => new JsonProviderAdapter($provider),
-            ProviderType::XML->value  => new XmlProviderAdapter($provider),
+            ProviderType::JSON => new JsonProviderAdapter($provider),
+            ProviderType::XML  => new XmlProviderAdapter($provider),
             default => throw new \InvalidArgumentException("Unsupported provider type"),
         };
     }
