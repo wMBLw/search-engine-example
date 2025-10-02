@@ -10,6 +10,7 @@ echo "Install application package  (npm and composer)"
 npm install
 composer install
 
+php artisan key:generate
 php artisan optimize:clear
 
 echo "Run migration for database"
