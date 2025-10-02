@@ -1,11 +1,9 @@
 <?php
 
-use App\Models\User;
-use App\Services\AuthService;
-use App\Repositories\Auth\AuthRepositoryInterface;
 use App\Exceptions\RefreshTokenExpiredException;
-use Illuminate\Support\Facades\Config;
-use Mockery;
+use App\Models\User;
+use App\Repositories\Auth\AuthRepositoryInterface;
+use App\Services\Auth\AuthService;
 
 beforeEach(function () {
 

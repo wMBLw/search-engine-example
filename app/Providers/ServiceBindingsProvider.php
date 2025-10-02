@@ -1,8 +1,8 @@
 <?php
 namespace App\Providers;
 
-use App\Services\AuthServiceInterface;
-use App\Services\AuthService;
+use App\Services\Auth\AuthService;
+use App\Services\Auth\AuthServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class ServiceBindingsProvider extends ServiceProvider

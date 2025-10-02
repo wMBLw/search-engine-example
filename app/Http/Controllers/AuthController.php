@@ -3,15 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserLoginRequest;
-
 use App\Http\Resources\UserLoginResource;
 use App\Http\Resources\UserResource;
-use App\Services\AuthServiceInterface;
-use App\Services\AuthService;
+use App\Services\Auth\AuthService;
+use App\Services\Auth\AuthServiceInterface;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
