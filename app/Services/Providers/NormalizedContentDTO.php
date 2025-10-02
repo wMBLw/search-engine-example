@@ -68,11 +68,6 @@ final class NormalizedContentDTO
         return $this->tags;
     }
 
-    public function getMeta(): array
-    {
-        return $this->meta;
-    }
-
     public function setExternalId(string $external_id): void
     {
         $this->external_id = $external_id;

@@ -4,10 +4,16 @@ namespace App\Models;
 
 use App\Enums\ProviderType;
 use App\Scopes\ActiveProviderScope;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Provider extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'type',
@@ -33,4 +39,17 @@ class Provider extends Model
         static::addGlobalScope(new ActiveProviderScope);
     }
 
+    public function scopeByNonDisabledUntil(Builder $query)
+    {
+        return $query->where(function ($subQuery) {
+            $subQuery->whereNull('disabled_until')
+                ->orWhere('disabled_until', '<', Carbon::now());
+        });
+
+    }
+
+    public function contents(): HasMany
+    {
+        return $this->hasMany(Content::class);
+    }
 }
