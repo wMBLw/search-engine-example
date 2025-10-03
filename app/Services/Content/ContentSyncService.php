@@ -70,11 +70,6 @@ class ContentSyncService implements ContentSyncServiceInterface
 
     private function performProviderSync(Provider $provider): array
     {
-        Log::info('Starting provider sync', [
-            'provider_id' => $provider->id,
-            'provider_name' => $provider->name
-        ]);
-
         $adapter = ProviderAdapterFactory::make($provider);
 
         $contents = $adapter->fetchAll();
@@ -117,17 +112,9 @@ class ContentSyncService implements ContentSyncServiceInterface
                     $createdCount++;
                 }
             }
-        });
+        },5); // Provides automatic retry in case of DB deadlock
 
         $this->updateProviderSyncStatus($provider, true);
-
-        Log::info('Provider sync completed successfully', [
-            'provider_id' => $provider->id,
-            'provider_name' => $provider->name,
-            'synced_count' => count($contents),
-            'created_count' => $createdCount,
-            'updated_count' => $updatedCount
-        ]);
 
         return [
             'success' => true,

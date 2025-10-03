@@ -6,7 +6,6 @@ use App\Models\Content;
 use App\Models\Provider;
 use App\Services\Content\Contracts\ContentRepositoryInterface;
 use App\Services\Providers\NormalizedContentDTO;
-use Carbon\Carbon;
 
 class ContentRepository implements ContentRepositoryInterface
 {
@@ -22,6 +21,7 @@ class ContentRepository implements ContentRepositoryInterface
                 'title' => $dto->getTitle(),
                 'views' => $dto->getViews(),
                 'likes' => $dto->getLikes(),
+                'comments' => $dto->getComments(),
                 'reactions' => $dto->getReactions(),
                 'reading_time' => $dto->getReadingTime(),
                 'during_seconds' => $dto->getDuringSeconds(),
@@ -38,17 +38,4 @@ class ContentRepository implements ContentRepositoryInterface
             ->first();
     }
 
-    public function getContentCountForProvider(Provider $provider): int
-    {
-        return $provider->contents()->count();
-    }
-
-    public function deleteOldContentForProvider(Provider $provider, int $daysOld): int
-    {
-        $cutoffDate = Carbon::now()->subDays($daysOld);
-
-        return $provider->contents()
-            ->where('created_at', '<', $cutoffDate)
-            ->delete();
-    }
 }

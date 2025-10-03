@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 class JsonProviderAdapter extends AbstractProviderAdapter
 {
-    public $contentType = ProviderType::JSON;
+    public ProviderType $providerType = ProviderType::JSON;
 
     public function fetchAll(): array
     {
@@ -35,12 +35,55 @@ class JsonProviderAdapter extends AbstractProviderAdapter
     public function mapToDto(array $item): NormalizedContentDTO
     {
         $metrics = $item['metrics'] ?? [];
+        $contentType = strtolower($item['type'] ?? 'unknown');
 
         $normalizedContentDTO = new NormalizedContentDTO();
 
         $normalizedContentDTO->setExternalId($item['id']);
         $normalizedContentDTO->setTitle($item['title']);
         $normalizedContentDTO->setType(ContentType::from($item['type']));
+
+
+        if ($contentType === ContentType::VIDEO->value) {
+            $this->mapVideoMetrics($normalizedContentDTO, $metrics);
+        } elseif ($contentType === ContentType::ARTICLE->value) {
+            $this->mapArticleMetrics($normalizedContentDTO, $metrics);
+        } else {
+            //maybe throw exception
+            $this->mapDefaultMetrics($normalizedContentDTO, $metrics);
+        }
+
+        $normalizedContentDTO->setPublishedAt(isset($item['published_at']) ? Carbon::parse($item['published_at']) : null);
+
+        $normalizedContentDTO->setTags($this->normalizeTags($item['tags'] ?? []));
+
+        return $normalizedContentDTO;
+    }
+
+    private function mapVideoMetrics(NormalizedContentDTO $normalizedContentDTO, array $metrics): void
+    {
+        $normalizedContentDTO->setViews(isset($metrics['views']) ? (int)$metrics['views'] : 0);
+        $normalizedContentDTO->setLikes(isset($metrics['likes']) ? (int)$metrics['likes'] : 0);
+
+        $duration = $metrics['duration'] ?? null;
+        if (!is_null($duration)) {
+            $normalizedContentDTO->setDuringSeconds($this->durationToSeconds($duration));
+        }
+    }
+
+    private function mapArticleMetrics(NormalizedContentDTO $normalizedContentDTO, array $metrics): void
+    {
+        $readingTime = $metrics['reading_time'] ?? null;
+        if (!is_null($readingTime)) {
+            $normalizedContentDTO->setReadingTime($this->durationToSeconds($readingTime));
+        }
+
+        $normalizedContentDTO->setReactions(isset($metrics['reactions']) ? (int)$metrics['reactions'] : 0);
+        $normalizedContentDTO->setComments(isset($metrics['comments']) ? (int)$metrics['comments'] : 0);
+    }
+
+    private function mapDefaultMetrics(NormalizedContentDTO $normalizedContentDTO, array $metrics): void
+    {
         $normalizedContentDTO->setViews(isset($metrics['views']) ? (int)$metrics['views'] : 0);
         $normalizedContentDTO->setLikes(isset($metrics['likes']) ? (int)$metrics['likes'] : 0);
 
@@ -49,11 +92,20 @@ class JsonProviderAdapter extends AbstractProviderAdapter
             $normalizedContentDTO->setDuringSeconds($this->durationToSeconds($duration));
         }
 
-        $normalizedContentDTO->setPublishedAt(isset($item['published_at']) ? Carbon::parse($item['published_at']) : null);
+        $readingTime = $metrics['reading_time'] ?? null;
+        if (!is_null($readingTime)) {
+            $normalizedContentDTO->setReadingTime((int)$readingTime);
+        }
 
-        $normalizedContentDTO->setTags($item['tags']);
+        $reactions = $metrics['reactions'] ?? null;
+        if (!is_null($reactions)) {
+            $normalizedContentDTO->setReactions((int)$reactions);
+        }
+    }
 
-        return $normalizedContentDTO;
+    private function normalizeTags(array $tags): array
+    {
+        return array_unique(array_filter($tags));
     }
 
 }

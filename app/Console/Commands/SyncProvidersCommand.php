@@ -42,7 +42,6 @@ class SyncProvidersCommand extends Command
             return Command::SUCCESS;
 
         } catch (\Throwable $e) {
-            $this->error('Synchronization failed: ' . $e->getMessage());
 
             Log::error('Provider sync command failed', [
                 'error' => $e->getMessage(),

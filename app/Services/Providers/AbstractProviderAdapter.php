@@ -46,7 +46,7 @@ abstract class AbstractProviderAdapter implements ProviderAdapterInterface
     {
         $apiResponse = $this->client->get($this->provider->endpoint,[
             'headers' => [
-                'Accept' => $this->contentType->value == ProviderType::JSON->value ? 'application/json' : 'application/xml'
+                'Accept' => $this->providerType->value == ProviderType::JSON->value ? 'application/json' : 'application/xml'
             ]
         ]);
 
