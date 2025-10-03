@@ -27,14 +27,4 @@ class UserLoginRequest extends FormRequest
         ];
     }
 
-    public function messages(): array
-    {
-        return [
-            'email.required' => 'Email is required',
-            'email.email' => 'Email must be a valid email address',
-            'password.required' => 'Password is required',
-            'password.min' => 'Password must be at least :min characters',
-            'password.max' => 'Password must not be greater than :max characters',
-        ];
-    }
 }
