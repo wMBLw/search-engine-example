@@ -87,9 +87,11 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
+                            <th>External ID</th>
                             <th>Title</th>
                             <th>Type</th>
                             <th>Provider</th>
+                            <th>Tags / Category</th>
                             <th>Views</th>
                             <th>Likes</th>
                             <th>Score</th>
@@ -97,7 +99,7 @@
                         </tr>
                     </thead>
                     <tbody id="resultsTable">
-                        <tr><td colspan="7" class="text-center">Loading...</td></tr>
+                        <tr><td colspan="9" class="text-center">Loading...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -204,21 +206,47 @@ const Dashboard = {
         const tbody = document.getElementById('resultsTable');
 
         if (!data || data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No results found</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">No results found</td></tr>';
             return;
         }
 
         tbody.innerHTML = data.map(item => `
             <tr>
+                <td><code class="text-muted">${item.external_id || 'N/A'}</code></td>
                 <td><strong>${item.title}</strong></td>
                 <td><span class="badge bg-${item.type === 'video' ? 'danger' : 'primary'}">${item.type}</span></td>
                 <td>${item.provider?.name || 'N/A'}</td>
+                <td>${this.formatTagsAndCategories(item)}</td>
                 <td>${this.formatNumber(item.metrics?.views || 0)}</td>
                 <td>${this.formatNumber(item.metrics?.likes || 0)}</td>
                 <td><strong>${item.scores?.total?.toFixed(2) || 'N/A'}</strong></td>
                 <td>${this.formatDate(item.published_at)}</td>
             </tr>
         `).join('');
+    },
+
+    formatTagsAndCategories(item) {
+        const badges = [];
+
+        // TAGS İŞLEME
+        // Case 1: tags direkt array → ["programming", "advanced", "concurrency"]
+        // Case 2: tags object içinde category → {"category": ["programming", "architecture"]}
+
+        if (item.tags) {
+            if (Array.isArray(item.tags)) {
+                // Direkt array
+                item.tags.forEach(tag => {
+                    badges.push(`<span class="badge bg-info text-dark me-1 mb-1">${tag}</span>`);
+                });
+            } else if (typeof item.tags === 'object' && item.tags.category && Array.isArray(item.tags.category)) {
+                // Object içinde category array
+                item.tags.category.forEach(tag => {
+                    badges.push(`<span class="badge bg-info text-dark me-1 mb-1">${tag}</span>`);
+                });
+            }
+        }
+
+        return badges.length > 0 ? badges.join('') : '<span class="text-muted">-</span>';
     },
 
     renderPagination(meta) {
@@ -258,7 +286,7 @@ const Dashboard = {
 
     renderEmpty(message) {
         document.getElementById('resultsTable').innerHTML =
-            `<tr><td colspan="7" class="text-center text-muted">${message}</td></tr>`;
+            `<tr><td colspan="9" class="text-center text-muted">${message}</td></tr>`;
     },
 
     async goToPage(page) {
