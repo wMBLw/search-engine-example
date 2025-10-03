@@ -11,7 +11,7 @@ use Carbon\Carbon;
 class XmlProviderAdapter extends AbstractProviderAdapter
 {
 
-    public $contentType = ProviderType::XML;
+    public ProviderType $providerType = ProviderType::XML;
 
     public function fetchAll(): array
     {

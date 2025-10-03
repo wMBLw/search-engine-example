@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 class JsonProviderAdapter extends AbstractProviderAdapter
 {
-    public $contentType = ProviderType::JSON;
+    public ProviderType $providerType = ProviderType::JSON;
 
     public function fetchAll(): array
     {

@@ -148,7 +148,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-database-'),
+            'prefix' => '', // Cache::store('redis') uses the redis store from config/cache.php, which in turn relies on the redis connection in config/database.php. Both prefixes (database.php + cache.php) are applied, causing double prefixing.
             'persistent' => env('REDIS_PERSISTENT', false),
         ],
 
