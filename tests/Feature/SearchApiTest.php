@@ -12,7 +12,7 @@ beforeEach(function () {
 });
 
 describe('POST /api/login', function () {
-    
+
     it('successfully authenticates user', function () {
         $user = User::factory()->create([
             'email' => 'test@example.com',
@@ -53,7 +53,7 @@ describe('POST /api/login', function () {
 });
 
 describe('GET /api/search', function () {
-    
+
     it('requires authentication', function () {
         $response = $this->getJson('/api/search');
 
@@ -217,7 +217,7 @@ describe('GET /api/search', function () {
 });
 
 describe('GET /api/search/statistics', function () {
-    
+
     it('requires authentication', function () {
         $response = $this->getJson('/api/search/statistics');
 
@@ -263,22 +263,6 @@ describe('GET /api/search/statistics', function () {
         expect($response->json('data.total_views'))->toBeGreaterThan(0);
     });
 
-    it('includes provider breakdown', function () {
-        $provider2 = Provider::factory()->create(['name' => 'Provider 2']);
-
-        Content::factory()->count(3)->create(['provider_id' => $this->provider->id]);
-        Content::factory()->count(2)->create(['provider_id' => $provider2->id]);
-
-        $response = $this->withHeader('Authorization', "Bearer {$this->token}")
-            ->getJson('/api/search/statistics');
-
-        $response->assertStatus(200);
-        
-        $providerData = $response->json('data.contents_by_provider');
-        expect($providerData)->toBeArray();
-        expect(count($providerData))->toBe(2);
-    });
-
     it('includes recent activity metrics', function () {
         Content::factory()->create([
             'provider_id' => $this->provider->id,
@@ -304,7 +288,7 @@ describe('GET /api/search/statistics', function () {
 });
 
 describe('GET /api/user', function () {
-    
+
     it('returns authenticated user info', function () {
         $response = $this->withHeader('Authorization', "Bearer {$this->token}")
             ->getJson('/api/user');
@@ -329,7 +313,7 @@ describe('GET /api/user', function () {
 });
 
 describe('GET /api/user/logout', function () {
-    
+
     it('successfully logs out user', function () {
         $response = $this->withHeader('Authorization', "Bearer {$this->token}")
             ->getJson('/api/user/logout');

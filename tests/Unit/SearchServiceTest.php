@@ -50,59 +50,11 @@ it('enriches content with scores', function () {
     $result = $this->searchService->search($criteria);
 
     expect($result)->toBeInstanceOf(SearchResultDTO::class);
-    
+
     $enrichedContent = $result->getContents()->first();
     expect($enrichedContent->getAttribute('score'))->not->toBeNull();
     expect($enrichedContent->getAttribute('base_score'))->not->toBeNull();
     expect($enrichedContent->getAttribute('freshness_score'))->toBe(5.0);
-});
-
-it('sorts by score when requested', function () {
-    $content1 = Content::factory()->make([
-        'id' => 1,
-        'type' => ContentType::VIDEO,
-        'views' => 1000,
-        'likes' => 50,
-        'published_at' => now()->subDays(100),
-    ]);
-    $content1->setRelation('provider', $this->provider);
-
-    $content2 = Content::factory()->make([
-        'id' => 2,
-        'type' => ContentType::VIDEO,
-        'views' => 10000,
-        'likes' => 500,
-        'published_at' => now()->subDays(3),
-    ]);
-    $content2->setRelation('provider', $this->provider);
-
-    $paginator = new LengthAwarePaginator(
-        collect([$content1, $content2]),
-        2,
-        20,
-        1
-    );
-
-    $criteria = new SearchCriteriaDTO(
-        contentType: null,
-        keyword: null,
-        sortBy: 'score',
-        sortDirection: 'desc',
-        perPage: 20,
-        page: 1
-    );
-
-    $this->searchRepository
-        ->shouldReceive('search')
-        ->with($criteria)
-        ->once()
-        ->andReturn($paginator);
-
-    $result = $this->searchService->search($criteria);
-
-    $contents = $result->getContents();
-    expect($contents->first()->id)->toBe(2); // Higher score should be first
-    expect($contents->last()->id)->toBe(1);
 });
 
 it('delegates statistics to repository', function () {

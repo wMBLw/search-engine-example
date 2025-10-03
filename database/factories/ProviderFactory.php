@@ -20,10 +20,25 @@ class ProviderFactory extends Factory
      */
     public function definition(): array
     {
+        $providers = [
+            [
+                'name' => 'Provider 1',
+                'type' => ProviderType::JSON,
+                'endpoint' => 'https://raw.githubusercontent.com/WEG-Technology/mock/refs/heads/main/v1/provider1',
+            ],
+            [
+                'name' => 'Provider 2',
+                'type' => ProviderType::XML,
+                'endpoint' => 'https://raw.githubusercontent.com/WEG-Technology/mock/refs/heads/main/v2/provider2'
+            ]
+        ];
+
+        $selectedProvider = fake()->randomElement($providers);
+
         return [
-            'name' => fake()->company(),
-            'type' => fake()->randomElement([ProviderType::JSON, ProviderType::XML]),
-            'endpoint' => fake()->url(),
+            'name' => $selectedProvider['name'],
+            'type' => $selectedProvider['type'],
+            'endpoint' => $selectedProvider['endpoint'],
             'is_active' => true,
             'consecutive_failures' => 0,
             'config' => null,
