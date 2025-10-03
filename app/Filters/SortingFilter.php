@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Builder;
 
 class SortingFilter
 {
-    public function __construct(private SearchCriteriaDTO $criteria)
+    private SearchCriteriaDTO $criteria;
+    public function __construct(SearchCriteriaDTO $criteria)
     {
+        $this->criteria = $criteria;
     }
 
     public function handle(Builder $query, Closure $next)
