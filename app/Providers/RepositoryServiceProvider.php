@@ -3,10 +3,10 @@ namespace App\Providers;
 
 use App\Repositories\Auth\AuthRepository;
 use App\Repositories\Auth\AuthRepositoryInterface;
+use App\Repositories\Search\SearchRepository;
+use App\Repositories\Search\SearchRepositoryInterface;
 use App\Services\Content\ContentRepository;
 use App\Services\Content\Contracts\ContentRepositoryInterface;
-use App\Services\Search\Contracts\SearchRepositoryInterface;
-use App\Services\Search\SearchRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
