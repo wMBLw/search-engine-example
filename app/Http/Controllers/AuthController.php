@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserLoggedIn;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Resources\UserLoginResource;
 use App\Http\Resources\UserResource;
@@ -33,6 +34,12 @@ class AuthController extends Controller
         $authUser = Auth::user();
 
         $loggedInUser = $this->authService->login($authUser);
+
+        event(new UserLoggedIn(
+            user: $authUser,
+            ipAddress: $request->ip(),
+            userAgent: $request->userAgent() ?? 'Unknown',
+        ));
 
         return new UserLoginResource($loggedInUser,200);
     }
