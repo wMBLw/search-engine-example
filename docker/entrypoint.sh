@@ -23,7 +23,7 @@ echo "Clearing caches..."
 php artisan optimize:clear
 
 # Wait for database to be ready
-echo "⏳ Waiting for database to be ready..."
+echo "Waiting for database to be ready..."
 until php artisan migrate:status > /dev/null 2>&1; do
     echo "Database not ready yet, waiting 2 seconds..."
     sleep 2
