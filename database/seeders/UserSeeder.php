@@ -14,10 +14,10 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $userData = [
-            'name' => 'Mülken Burak LALE',
-            'email' => 'mulkenburak@gmail.com',
+            'name' => 'Examle user',
+            'email' => 'test@example.com',
             'email_verified_at' => now(),
-            'password' => Hash::make('123456')
+            'password' => Hash::make('password')
         ];
 
         User::firstOrCreate(
