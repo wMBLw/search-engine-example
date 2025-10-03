@@ -4,7 +4,7 @@ namespace App\Services\Search;
 
 use App\Enums\ContentType;
 
-class SearchCriteriaDTO
+readonly final class SearchCriteriaDTO
 {
     private ?string $keyword;
     private ?ContentType $contentType;
