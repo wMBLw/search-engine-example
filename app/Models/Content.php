@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use App\Enums\ContentType;
+use App\Observers\ContentObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[ObservedBy([ContentObserver::class])]
 class Content extends Model
 {
     protected $fillable = [
@@ -31,7 +34,7 @@ class Content extends Model
         'reading_time' => 'integer',
         'during_seconds' => 'integer',
         'published_at' => 'datetime',
-        'tags' => 'json',
+        'tags' => 'json'
     ];
 
     public function provider(): BelongsTo
