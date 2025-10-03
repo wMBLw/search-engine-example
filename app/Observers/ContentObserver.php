@@ -3,12 +3,11 @@
 namespace App\Observers;
 
 use App\Models\Content;
+use App\Repositories\Search\SearchRepository;
 use Illuminate\Support\Facades\Cache;
 
 class ContentObserver
 {
-    private const CACHE_KEY = 'search_statistics';
-
     public function created(Content $content): void
     {
         $this->clearStatisticsCache();
@@ -26,7 +25,7 @@ class ContentObserver
 
     private function clearStatisticsCache(): void
     {
-        Cache::forget(self::CACHE_KEY);
+        Cache::forget(SearchRepository::getStatisticsCacheKey());
     }
 }
 
