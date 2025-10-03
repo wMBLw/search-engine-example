@@ -15,6 +15,7 @@ final class NormalizedContentDTO
     private int $reactions = 0;
     private int $reading_time = 0;
     private int $during_seconds = 0;
+    private int $comments = 0;
     private ?Carbon $published_at = null;
     private array $tags = [];
 
@@ -68,6 +69,11 @@ final class NormalizedContentDTO
         return $this->tags;
     }
 
+    public function getComments(): int
+    {
+        return $this->comments;
+    }
+
     public function setExternalId(string $external_id): void
     {
         $this->external_id = $external_id;
@@ -118,18 +124,24 @@ final class NormalizedContentDTO
         $this->tags = $tags;
     }
 
+    public function setComments(int $comments): void
+    {
+        $this->comments = $comments;
+    }
+
     public function toArray(): array
     {
         return [
-            'external_id' => $this->external_id,
-            'type' => $this->type,
-            'title' => $this->title,
-            'views' => $this->views,
-            'likes' => $this->likes,
-            'reactions' => $this->reactions,
-            'reading_time' => $this->reading_time,
-            'during_seconds' => $this->during_seconds,
-            'published_at' => $this->published_at?->toDateTimeString(),
+            'external_id' => $this->getExternalId(),
+            'type' => $this->getType(),
+            'title' => $this->getTitle(),
+            'views' => $this->getViews(),
+            'likes' => $this->getLikes(),
+            'reactions' => $this->getReactions(),
+            'reading_time' => $this->getReadingTime(),
+            'during_seconds' => $this->getDuringSeconds(),
+            'comments' => $this->getComments(),
+            'published_at' => $this->getPublishedAt()?->toDateTimeString(),
             'tags' => $this->tags
         ];
     }

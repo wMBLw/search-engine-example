@@ -21,6 +21,7 @@ class ContentRepository implements ContentRepositoryInterface
                 'title' => $dto->getTitle(),
                 'views' => $dto->getViews(),
                 'likes' => $dto->getLikes(),
+                'comments' => $dto->getComments(),
                 'reactions' => $dto->getReactions(),
                 'reading_time' => $dto->getReadingTime(),
                 'during_seconds' => $dto->getDuringSeconds(),

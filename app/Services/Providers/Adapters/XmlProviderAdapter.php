@@ -10,7 +10,6 @@ use Carbon\Carbon;
 
 class XmlProviderAdapter extends AbstractProviderAdapter
 {
-
     public ProviderType $providerType = ProviderType::XML;
 
     public function fetchAll(): array
@@ -50,12 +49,59 @@ class XmlProviderAdapter extends AbstractProviderAdapter
     public function mapToDto(array $item): NormalizedContentDTO
     {
         $metrics = $item['stats'] ?? [];
+        $contentType = strtolower($item['type'] ?? 'unknown');
 
         $normalizedContentDTO = new NormalizedContentDTO();
 
         $normalizedContentDTO->setExternalId($item['id']);
         $normalizedContentDTO->setTitle($item['headline']);
         $normalizedContentDTO->setType(ContentType::from($item['type']));
+
+        if ($contentType === ContentType::VIDEO->value) {
+            $this->mapVideoMetrics($normalizedContentDTO, $metrics);
+        } elseif ($contentType === ContentType::ARTICLE->value) {
+            $this->mapArticleMetrics($normalizedContentDTO, $metrics);
+        } else {
+            //maybe throw exception
+            $this->mapDefaultMetrics($normalizedContentDTO, $metrics);
+        }
+
+        $normalizedContentDTO->setPublishedAt(
+            isset($item['publication_date']) ? Carbon::parse($item['publication_date']) : null
+        );
+
+        $normalizedContentDTO->setTags($this->normalizeTags($item['categories'] ?? []));
+
+        return $normalizedContentDTO;
+    }
+
+    private function mapVideoMetrics(NormalizedContentDTO $normalizedContentDTO, array $metrics): void
+    {
+        $normalizedContentDTO->setViews(isset($metrics['views']) ? (int)$metrics['views'] : 0);
+        $normalizedContentDTO->setLikes(isset($metrics['likes']) ? (int)$metrics['likes'] : 0);
+
+        $duration = $metrics['duration'] ?? null;
+        if (!is_null($duration)) {
+            $normalizedContentDTO->setDuringSeconds($this->durationToSeconds($duration));
+        }
+    }
+
+    private function mapArticleMetrics(NormalizedContentDTO $normalizedContentDTO, array $metrics): void
+    {
+        $readingTime = $metrics['reading_time'] ?? null;
+        if (!is_null($readingTime)) {
+            $normalizedContentDTO->setReadingTime((int)$readingTime);
+            $normalizedContentDTO->setDuringSeconds((int)$readingTime * 60);
+            $normalizedContentDTO->setReadingTime($this->durationToSeconds($readingTime));
+
+        }
+        $normalizedContentDTO->setReactions(isset($metrics['reactions']) ? (int)$metrics['reactions'] : 0);
+
+        $normalizedContentDTO->setComments(isset($metrics['comments']) ? (int)$metrics['comments'] : 0);
+    }
+
+    private function mapDefaultMetrics(NormalizedContentDTO $normalizedContentDTO, array $metrics): void
+    {
         $normalizedContentDTO->setViews(isset($metrics['views']) ? (int)$metrics['views'] : 0);
         $normalizedContentDTO->setLikes(isset($metrics['likes']) ? (int)$metrics['likes'] : 0);
 
@@ -64,10 +110,27 @@ class XmlProviderAdapter extends AbstractProviderAdapter
             $normalizedContentDTO->setDuringSeconds($this->durationToSeconds($duration));
         }
 
-        $normalizedContentDTO->setPublishedAt(isset($item['publication_date']) ? Carbon::parse($item['publication_date']) : null);
+        $readingTime = $metrics['reading_time'] ?? null;
+        if (!is_null($readingTime)) {
+            $normalizedContentDTO->setReadingTime((int)$readingTime);
+        }
 
-        $normalizedContentDTO->setTags($item['categories']);
+        $reactions = $metrics['reactions'] ?? null;
+        if (!is_null($reactions)) {
+            $normalizedContentDTO->setReactions((int)$reactions);
+        }
+    }
 
-        return $normalizedContentDTO;
+    private function normalizeTags(array $tags): array
+    {
+        $normalizedTags['category'] = [];
+        foreach ($tags as $tag) {
+            if (is_array($tag)) {
+                $normalizedTags['category'] = array_merge($normalizedTags['category'], array_values($tag));
+            } else {
+                $normalizedTags['category'][] = $tag;
+            }
+        }
+        return array_unique(array_filter($normalizedTags));
     }
 }

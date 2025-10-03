@@ -17,6 +17,7 @@ class Content extends Model
         'likes',
         'reactions',
         'reading_time',
+        'comments',
         'during_seconds',
         'published_at',
         'tags'
