@@ -20,14 +20,8 @@ class KeywordFilter
             $keyword = $this->criteria->getKeyword();
 
             $query->where(function ($subQuery) use ($keyword) {
-
                 $subQuery->where('title', 'LIKE', "%{$keyword}%")
-                    ->orWhereJsonContains('tags', $keyword)
-                    ->orWhere(function ($jsonSearchQuery) use ($keyword) {
-
-                        $jsonSearchQuery->whereRaw("JSON_SEARCH(tags, 'one', ?) IS NOT NULL", ["%{$keyword}%"]);
-
-                    });
+                    ->orWhereRaw('LOWER(tags) LIKE ?', ['%' . strtolower($keyword) . '%']);
             });
         }
 

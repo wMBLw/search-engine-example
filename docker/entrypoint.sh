@@ -29,4 +29,5 @@ php artisan optimize:clear
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 
 php artisan db:seed
+php artisan providers:sync
 echo "Application ready."
